@@ -62,7 +62,7 @@
 #
 #		$ mkdir xm; xmount --in ewf IMAGE.E01 xm/
 #		$ scalpel -p xm/IMAGE.E01.dd
-#		$ ./zero.scalpel.fuse.pl xm/IMAGE.E01.dd
+#		$ ./zero.scalpel.fuse.pl xm/IMAGE.dd
 #		$ ls mnt/
 #		$ #...profit... (use whatever tools you like)
 #		$ fusermount -u mnt/; rmdir mnt	# when done
