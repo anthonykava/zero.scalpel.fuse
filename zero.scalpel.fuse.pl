@@ -35,7 +35,7 @@
 #
 # 			NO WARRANTY (MIT) -- PROOF OF CONCEPT
 #
-#			Version: 0.00.2018.06.10.1213.poc
+#			Version: 0.00.2018.06.10.1301.poc
 # 			@anthonykava aka Karver
 #
 #	TODO: split lots of entries into sub-dirs
@@ -197,10 +197,10 @@ sub e_getattr
 	my $blockSize=2**10 * 64;															# our preferred block size
 	my $size=$blockSize;																# default $size to 1 block
 	my $modes=(0100<<9) + 0444;															# default mode to regular file 0444
-	my($dev,$ino,$rdev,$blocks,$gid,$uid,$nlink,$blksize)=(0,0,0,1,0,0,1,$blockSize);	# init stat details
+	my($dev,$ino,$rdev,$blocks,$gid,$uid,$nlink,$blksize)=(0,0,0,1,0,0,1,$blockSize); # init stat details
 	my($atime,$ctime,$mtime)=(time(),time(),time());									# MAC times are now
 
-	# If $path is meant to be a directory (e.g., /, ., 2016, 2016/06, 2016/06/29
+	# If $path is meant to be a directory (e.g., /, ., /jpg)
 	my $dirTest='/'.$path;
 	if($path eq '/' || $path eq '.' || $fs{$path} || $fs{$dirTest})	# directory
 	{
@@ -243,14 +243,13 @@ sub e_getdir
 # "VFS sanity check; it keeps all the necessary state, not much to do here."
 sub e_open
 {
-    my $file=shift()||'.';
-    my($flags,$fileinfo)=@_;
+	my $file=shift()||'.';
+	my($flags,$fileinfo)=@_;
 	my @ret=(-ENOENT());
 
-	# e.g., open called 2015/12/30/2015-17184.pdf, 32768, HASH(0x183cfe8)
-    &debug("open called $file, $flags, $fileinfo");
+	&debug("open called $file, $flags, $fileinfo");
 
-	# If $file is meant to be a directory (e.g., /, ., 2016, 2016/06, 2016/06/29
+	# If $path is meant to be a directory (e.g., /, ., /jpg)
 	my $dirTest='/'.$file;
 	if($file eq '/' || $file eq '.' || $fs{$file} || $fs{$dirTest})	# directory
 	{
@@ -261,7 +260,7 @@ sub e_open
 		my $file=$1;
 		@ret=(0,rand()) if $fileStarts{$file};	# random file handle for appearances
 	}
-    &debug("open ok for file=$file (handle $ret[1])") if $ret[1];
+    	&debug("open ok for file=$file (handle $ret[1])") if $ret[1];
 	return(@ret);
 }
 
@@ -271,10 +270,9 @@ sub e_open
 sub e_read
 {
 	my $path=shift()||'.';
-    my($buf,$off,$fh)=@_;
+	my($buf,$off,$fh)=@_;
 	my $ret=-ENOENT();
-    &debug("read from $path, $buf \@ $off");
-#	e.g., read from 2015/02/19/2015-01842.pdf, 4096 @ 0
+	&debug("read from $path, $buf \@ $off");
 
 	if($path=~/^\/?[^\/]+\/([^\/]+)$/)		# if filename seems plausible
 	{
@@ -295,8 +293,6 @@ sub e_read
 		}
 		else
 		{
-#			$ret=substr($pdf,$off,$buf);	# otherwise give-up $buf bytes at $off offset
-
 			open($imgFh,$imgPath) if !$imgFh;
 			if($imgFh)
 			{
@@ -328,7 +324,7 @@ sub daemonise
 	open(STDOUT,'>>',$logfile)||die("can't open logfile: $!");	# redir STDOUT to log file
 	defined(my $pid=fork())||die("can't fork: $!");			# when you come to a fork()...
 	exit(0) if $pid;													# "non-zero now means I am the parent"
-#   (setsid() != -1) || die "Can't start a new session: $!";		# (didn't use this)
+#	(setsid() != -1) || die "Can't start a new session: $!";	# (didn't use this)
 	open(STDERR,'>&',\*STDOUT)||die("can't dup stdout: $!");	# STDERR to STDOUT
 }
 
