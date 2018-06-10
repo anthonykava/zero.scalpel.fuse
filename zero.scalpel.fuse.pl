@@ -23,20 +23,20 @@
 # SOFTWARE.
 #
 # zero.scalpel.fuse.pl	FUSE driver in Perl for reading scalpel's
-# 						audit.txt file and showing a file system
-# 						that maps files it would have carved to a
-# 						disk image -- this allows for zero-storage
-# 						carving as you can browse and view files
-# 						with only a 'scalpel -p' (preview, scalpel
-# 						writes no files)
+# 			audit.txt file and showing a file system
+# 			that maps files it would have carved to a
+# 			disk image -- this allows for zero-storage
+# 			carving as you can browse and view files
+# 			with only a 'scalpel -p' (preview, scalpel
+# 			writes no files)
 #
-# 						Useful for me anyway, maybe not for you,
-# 						but if so then enjoy.
+# 			Useful for me anyway, maybe not for you,
+# 			but if so then enjoy.
 #
-# 						NO WARRANTY (MIT) -- PROOF OF CONCEPT
+# 			NO WARRANTY (MIT) -- PROOF OF CONCEPT
 #
-#						Version: 0.00.2018.06.10.1213.poc
-# 						@anthonykava aka Karver
+#			Version: 0.00.2018.06.10.1213.poc
+# 			@anthonykava aka Karver
 #
 #	TODO: split lots of entries into sub-dirs
 #	TODO: do better
@@ -68,18 +68,18 @@
 #		$ fusermount -u mnt/; rmdir mnt	# when done
 #		$ fusermount -u xm/; rmdir xm	# when done
 
-use strict;													# of course
-use warnings;												# helpful
-use Cwd				qw/cwd abs_path/;						# for resolving relative paths
-use Fuse			qw/fuse_get_context/;					# kinda the point
-use POSIX			qw/ENOENT EISDIR EINVAL/;				# values for FUSE
+use strict;							# of course
+use warnings;							# helpful
+use Cwd			qw/cwd abs_path/;			# for resolving relative paths
+use Fuse		qw/fuse_get_context/;			# kinda the point
+use POSIX		qw/ENOENT EISDIR EINVAL/;		# values for FUSE
 
-my $usage			= "\tUsage: $0 imgPath [auditPath] [mntPoint] [debug] [stayAttached]\n";
-my $imgPath			= shift()||'';							# Disk image path
+my $usage		= "\tUsage: $0 imgPath [auditPath] [mntPoint] [debug] [stayAttached]\n";
+my $imgPath		= shift()||'';				# Disk image path
 my $auditPath		= shift()||'scalpel-output/audit.txt';	# Path to scalpel audit.txt
-my $mntPoint		= shift()||'mnt';						# Mount point
-my $debug			= shift()||0;							# 0=none, 1=some
-my $stayAttached	= shift()||0;							# 0=be daemon-like, 1=stay
+my $mntPoint		= shift()||'mnt';			# Mount point
+my $debug		= shift()||0;				# 0=none, 1=some
+my $stayAttached	= shift()||0;				# 0=be daemon-like, 1=stay
 
 # Init hashes to track things (not ideal, so let's call this beta)
 my %fileStarts		= ();
@@ -126,10 +126,10 @@ if(open(my $fh,$auditPath))
 		if($goTime)
 		{
 			my($file,$start,$chop,$len,$image)=split(/\s+/,$_,5);
-			#File		  Start			Chop		Length		Extracted From
-			#00000017.3GP5      487936		YES         2500000		image.reformatted.dd
-			#00000016.PNG       430592		YES         2500000		image.reformatted.dd
-			#00000015.JPG      1428805		YES         2500000		image.reformatted.dd
+			#File		  Start		Chop	Length		Extracted From
+			#00000017.3GP5      487936	YES         2500000	image.reformatted.dd
+			#00000016.PNG       430592	YES         2500000	image.reformatted.dd
+			#00000015.JPG      1428805	YES         2500000	image.reformatted.dd
 
 			if($file && $start && $len)
 			{
@@ -171,9 +171,9 @@ foreach my $ext (sort(keys(%fileExtens)))
 #/*                         Main Procedure                            */
 #/*********************************************************************/
 
-&daemonise() if !$stayAttached;			# fork-off
-Fuse::main(								# FUSE tofu & potatoes
-	mountpoint	=>	$mntPoint,			# <-- mount point here
+&daemonise() if !$stayAttached;				# fork-off
+Fuse::main(						# FUSE tofu & potatoes
+	mountpoint	=>	$mntPoint,		# <-- mount point here
 	mountopts	=>	'ro,allow_other',
 	getattr		=>	"main::e_getattr",
 	getdir		=>	"main::e_getdir",
@@ -221,15 +221,15 @@ sub e_getattr
 # e_getdit($dir) -- handler for returning dir entries
 sub e_getdir
 {
-	my $dir=shift()||'/';							# / default, why not
+	my $dir=shift()||'/';				# / default, why not
 	my @ret=();
 	&debug("e_getdir($dir)");
 
-	if($dir eq '/' || $dir eq '.')					# root
+	if($dir eq '/' || $dir eq '.')			# root
 	{
 		@ret=@{ $fs{'/'} };
 	}
-	elsif($dir=~/^\/?([^\/]+)$/)					# first level (file extensions)
+	elsif($dir=~/^\/?([^\/]+)$/)			# first level (file extensions)
 	{
 		my $ext=$1;
 		$dir='/'.$dir if $dir!~/^\//;
@@ -254,9 +254,9 @@ sub e_open
 	my $dirTest='/'.$file;
 	if($file eq '/' || $file eq '.' || $fs{$file} || $fs{$dirTest})	# directory
 	{
-		@ret=(-EISDIR());	# error: this is a dir, mate
+		@ret=(-EISDIR());			# error: this is a dir, mate
 	}
-	elsif($file=~/^\/?[^\/]+\/([^\/]+)$/)	# if $file is meant to be a file
+	elsif($file=~/^\/?[^\/]+\/([^\/]+)$/)		# if $file is meant to be a file
 	{
 		my $file=$1;
 		@ret=(0,rand()) if $fileStarts{$file};	# random file handle for appearances
@@ -276,26 +276,26 @@ sub e_read
     &debug("read from $path, $buf \@ $off");
 #	e.g., read from 2015/02/19/2015-01842.pdf, 4096 @ 0
 
-	if($path=~/^\/?[^\/]+\/([^\/]+)$/)	# if filename seems plausible
+	if($path=~/^\/?[^\/]+\/([^\/]+)$/)		# if filename seems plausible
 	{
 		my $file=$1;
 		my $start=$fileStarts{$file};
 		my $size=$fileSizes{$file};
 		if(!$start || !$size)
 		{
-			$ret=-ENOENT();									# give FS error if this failed
+			$ret=-ENOENT();			# give FS error if this failed
 		}
 		elsif($off>$size)
 		{
-			$ret=-EINVAL();									# invalid FS error if reading beyond end
+			$ret=-EINVAL();			# invalid FS error if reading beyond end
 		}
 		elsif($off==$size)
 		{
-			$ret=0;											# return 0 if we're done reading
+			$ret=0;				# return 0 if we're done reading
 		}
 		else
 		{
-#			$ret=substr($pdf,$off,$buf);					# otherwise give-up $buf bytes at $off offset
+#			$ret=substr($pdf,$off,$buf);	# otherwise give-up $buf bytes at $off offset
 
 			open($imgFh,$imgPath) if !$imgFh;
 			if($imgFh)
@@ -306,7 +306,7 @@ sub e_read
 			}
 			else
 			{
-				$ret=-ENOENT();								# give FS error if opening image failed
+				$ret=-ENOENT();		# give FS error if opening image failed
 			}
 		}
 	}
@@ -322,14 +322,14 @@ sub e_statfs { return 255, 1, 1, 1, 1, 2 }
 # "from http://perldoc.perl.org/perlipc.html#Complete-Dissociation-of-Child-from-Parent"
 sub daemonise
 {
-	my $logfile=shift()||cwd().'/log.zero.scalpel.fuse';				# log file in pwd unless passed
+	my $logfile=shift()||cwd().'/log.zero.scalpel.fuse';		# log file in pwd unless passed
 	chdir("/")||die("can't chdir to /: $!");
-	open(STDIN,'<','/dev/null')||die("can't read /dev/null: $!");		# redir STDIN (/dev/null)
-	open(STDOUT,'>>',$logfile)||die("can't open logfile: $!");			# redir STDOUT to log file
-	defined(my $pid=fork())||die("can't fork: $!");						# when you come to a fork()...
+	open(STDIN,'<','/dev/null')||die("can't read /dev/null: $!");	# redir STDIN (/dev/null)
+	open(STDOUT,'>>',$logfile)||die("can't open logfile: $!");	# redir STDOUT to log file
+	defined(my $pid=fork())||die("can't fork: $!");			# when you come to a fork()...
 	exit(0) if $pid;													# "non-zero now means I am the parent"
-#   (setsid() != -1) || die "Can't start a new session: $!";			# (didn't use this)
-	open(STDERR,'>&',\*STDOUT)||die("can't dup stdout: $!");			# STDERR to STDOUT
+#   (setsid() != -1) || die "Can't start a new session: $!";		# (didn't use this)
+	open(STDERR,'>&',\*STDOUT)||die("can't dup stdout: $!");	# STDERR to STDOUT
 }
 
 # debug($msg[,$lvl=1]) -- print timestamp and $msg if $debug>=$lvl
@@ -343,5 +343,3 @@ sub debug
 		print scalar(localtime())."\t".$msg."\n" if $msg;
 	}
 }
-
-
