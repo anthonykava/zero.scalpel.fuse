@@ -1,18 +1,13 @@
-# zero.scalpel.fuse
+# zero.scalpel.fuse.pl
 
-Perl FUSE driver for zero-storage file carving using scalpel -p
-Proof of Concept, tested under Ubuntu Linux 18.04 with scalpel 1.60
-
-## zero.scalpel.fuse.pl
-
-FUSE driver in Perl for reading scalpel's audit.txt file and showing a file system that maps files it would have carved to a disk image -- this allows for zero-storage carving as you can browse and view files with only a 'scalpel -p' (preview, scalpel writes no files)  
+FUSE driver in Perl for reading scalpel's audit.txt file and showing a file system that maps files it would have carved to a disk image -- this allows for zero-storage carving as you can browse and view files with only a 'scalpel -p' (preview, scalpel writes no files) -- tested under Ubuntu Linux 18.04  
   
 Useful for me anyway, maybe not for you, but if so then enjoy.  
   
 NO WARRANTY (MIT) -- PROOF OF CONCEPT  
 @anthonykava aka Karver  
   
-### Pre-reqs
+## Pre-reqs
 
 Perl modules: Cwd, Fuse, POSIX  
 
@@ -28,7 +23,7 @@ Tested with scalpel 1.60
 Debian/Ubuntu: sudo apt install scalpel  
 See also: https://github.com/sleuthkit/scalpel
 
-### Example use with an E01 and xmount (no root/sudo required)
+## Example use with an E01 and xmount (no root/sudo required)
 (xmount not required with a raw/dd disk image, of course)
 
       $ mkdir xm; xmount --in ewf IMAGE.E01 xm/
