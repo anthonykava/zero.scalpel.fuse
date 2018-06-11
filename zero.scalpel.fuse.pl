@@ -61,7 +61,7 @@
 #	(xmount not required with a raw/dd disk image, of course)
 #
 #		$ mkdir xm; xmount --in ewf IMAGE.E01 xm/
-#		$ scalpel -p xm/IMAGE.E01.dd
+#		$ scalpel -p xm/IMAGE.dd
 #		$ ./zero.scalpel.fuse.pl xm/IMAGE.dd
 #		$ ls mnt/
 #		$ #...profit... (use whatever tools you like)
