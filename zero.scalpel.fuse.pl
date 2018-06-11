@@ -323,7 +323,7 @@ sub daemonise
 	open(STDIN,'<','/dev/null')||die("can't read /dev/null: $!");	# redir STDIN (/dev/null)
 	open(STDOUT,'>>',$logfile)||die("can't open logfile: $!");	# redir STDOUT to log file
 	defined(my $pid=fork())||die("can't fork: $!");			# when you come to a fork()...
-	exit(0) if $pid;													# "non-zero now means I am the parent"
+	exit(0) if $pid;						# "non-zero now means I am the parent"
 #	(setsid() != -1) || die "Can't start a new session: $!";	# (didn't use this)
 	open(STDERR,'>&',\*STDOUT)||die("can't dup stdout: $!");	# STDERR to STDOUT
 }
