@@ -182,6 +182,7 @@ Fuse::main(						# FUSE tofu & potatoes
 	read		=>	"main::e_read",
 	threaded	=>	0
 );
+close($imgFh);						# theoretically close image file
 
 #/*********************************************************************/
 #/*                           Subroutines                             */
